@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity R-01: Profile & Performance Architecture</title>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Tailwind Configuration for Warm Neutral Palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            500: '#78716c',
+                            600: '#57534e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        },
+                        sage: {
+                            100: '#e0e7df',
+                            500: '#84a98c',
+                            700: '#52796f',
+                        },
+                        rust: {
+                            500: '#d66853',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for Chart Containers and Specific Layout Needs -->
+    <style>
+        /* Base Chart Container Rules */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Hide scrollbar for clean horizontal scrolling lists */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #52796f;
+            color: #292524;
+            font-weight: 600;
+        }
+    </style>
+
+    <!-- 
+    Chosen Palette: Warm Neutrals (Stone) with Sage Green (Growth/Balance) and Rust (Alerts).
+    
+    Application Structure Plan:
+    1. Identity Dashboard: Immediate, high-level overview of who R-01 is (Executive Summary + Core Values).
+    2. Psychological Architecture: Deep dive into the "Engine" (Cognitive/Emotional style) using a Radar chart for trait balance.
+    3. Strengths vs. Risks Matrix: A comparative view to understand the "Double-Edged Sword" of R-01's personality.
+    4. Strategic Intervention Roadmap: A tabbed interface for Short/Medium/Long term goals to prevent overwhelm.
+    5. 12-Week Execution Protocol: An interactive phase-based view to break down the immediate action plan.
+    6. Metrics & KPIs: Visualizing the definitions of success.
+    7. Operational Toolbox: Practical scripts and routines for daily use.
+    
+    Visualization & Content Choices:
+    - Radar Chart: To show the skew of personality traits (High Analytical vs. Selective Social).
+    - Interactive Cards: For Strengths/Risks to allow focused reading without clutter.
+    - Timeline/Tabs: For the 12-week plan to reduce cognitive load, showing only one phase at a time.
+    - Gauge Charts (Plotly): To visualize the "Target Metrics" clearly.
+    
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+</head>
+
+<body class="bg-stone-100 text-stone-800 font-sans leading-relaxed selection:bg-sage-100 selection:text-stone-900">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-stone-50/90 backdrop-blur-md border-b border-stone-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold tracking-tight text-stone-900">Entity R-01</span>
+                    <span
+                        class="ml-3 px-2 py-0.5 rounded text-xs font-medium bg-sage-100 text-sage-700 hidden sm:inline-block">Report:
+                        Nov 17 2025</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-500">
+                    <a href="#identity" class="hover:text-stone-900 transition-colors">Identity</a>
+                    <a href="#psychology" class="hover:text-stone-900 transition-colors">Psychology</a>
+                    <a href="#roadmap" class="hover:text-stone-900 transition-colors">Action Plan</a>
+                    <a href="#toolbox" class="hover:text-stone-900 transition-colors">Toolbox</a>
+                </div>
+                <!-- Mobile Menu Button (Simple JS implementation below) -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-md text-stone-400 hover:text-stone-900 hover:bg-stone-100">
+                    <span class="text-2xl">&#9776;</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-50 border-b border-stone-200 px-4 pt-2 pb-4 space-y-1">
+            <a href="#identity" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-100">Identity</a>
+            <a href="#psychology"
+                class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-100">Psychology</a>
+            <a href="#roadmap" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-100">Action
+                Plan</a>
+            <a href="#toolbox" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-100">Toolbox</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECTION 1: Executive Summary & Identity -->
+        <section id="identity" class="space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-3xl font-bold text-stone-900">Executive Profile</h1>
+                    <span
+                        class="mt-2 md:mt-0 px-3 py-1 rounded-full bg-stone-100 text-stone-600 text-sm font-medium border border-stone-200">Status:
+                        High Potential / High Sensitivity</span>
+                </div>
+
+                <p class="text-lg text-stone-600 leading-relaxed max-w-4xl">
+                    Entity R-01 is a <span class="font-semibold text-stone-900">quietly ambitious, analytical
+                        thinker</span> seeking financial security and meaningful impact. Motivated by curiosity,
+                    competence, and healthy competition, they thrive in deep-work environments. However, vulnerabilities
+                    like <span class="text-rust-500 font-medium">sensitivity to criticism</span> and <span
+                        class="text-rust-500 font-medium">inconsistent follow-through</span> require structured
+                    interventions.
+                </p>
+
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Core Identity -->
+                    <div class="bg-stone-50 rounded-lg p-5 border-l-4 border-sage-500">
+                        <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Core Identity</h3>
+                        <p class="text-xl font-serif italic text-stone-800">"I want peace, purpose, and growth."</p>
+                    </div>
+                    <!-- Driving Belief (Risk) -->
+                    <div class="bg-stone-50 rounded-lg p-5 border-l-4 border-rust-500">
+                        <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Primary Risk
+                            Belief</h3>
+                        <p class="text-stone-800">"My value depends on my success" + "I must not fail."</p>
+                    </div>
+                    <!-- Key Values -->
+                    <div class="bg-stone-50 rounded-lg p-5 border-l-4 border-stone-400">
+                        <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Primary Values
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="px-2 py-1 bg-white border border-stone-200 rounded text-xs text-stone-600">Legacy</span>
+                            <span class="px-2 py-1 bg-white border border-stone-200 rounded text-xs text-stone-600">Tech
+                                Solving</span>
+                            <span
+                                class="px-2 py-1 bg-white border border-stone-200 rounded text-xs text-stone-600">Emotional
+                                Safety</span>
+                            <span class="px-2 py-1 bg-white border border-stone-200 rounded text-xs text-stone-600">Deep
+                                Understanding</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Psychological Architecture (Charts) -->
+        <section id="psychology" class="scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Radar Chart: Trait Profile -->
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6">
+                    <div class="mb-4">
+                        <h2 class="text-xl font-bold text-stone-900">Psychological Architecture</h2>
+                        <p class="text-sm text-stone-500 mt-1">
+                            Visualizing the balance between R-01's cognitive capabilities and emotional/social
+                            tendencies.
+                            Note the high analytical drive contrasted with social selectivity and emotional sensitivity.
+                        </p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="psychRadarChart"></canvas>
+                    </div>
+                    <div class="mt-4 flex justify-center space-x-4 text-sm text-stone-500">
+                        <div class="flex items-center"><span
+                                class="w-3 h-3 rounded-full bg-sage-500 mr-2"></span>Baseline Potential</div>
+                        <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-rust-500 mr-2"></span>Under
+                            Stress</div>
+                    </div>
+                </div>
+
+                <!-- Interactive Attributes List -->
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 flex flex-col">
+                    <h2 class="text-xl font-bold text-stone-900 mb-4">Behavioral Dynamics</h2>
+                    <p class="text-sm text-stone-500 mb-6">
+                        Click on a dimension to explore R-01's specific behavioral patterns and triggers.
+                    </p>
+
+                    <div class="flex-1 space-y-3" id="behavior-accordion">
+                        <!-- Items injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Strengths vs Risks Matrix -->
+        <section>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                <div class="p-6 border-b border-stone-100 bg-stone-50">
+                    <h2 class="text-xl font-bold text-stone-900">Strengths & Risks Analysis</h2>
+                    <p class="text-sm text-stone-500 mt-1">Understanding the dual nature of R-01's traits. Green
+                        indicates assets; Red indicates liabilities requiring management.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <!-- Strengths -->
+                    <div class="p-6 md:border-r border-stone-100">
+                        <h3 class="flex items-center text-sage-700 font-bold mb-4">
+                            <span class="text-xl mr-2">&#9873;</span> Strengths (Green Flags)
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-sage-500 font-bold text-xs">&#10003;</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Strategic Legacy Mindset</span>
+                                    <span class="text-sm text-stone-500">Long-term orientation focused on meaningful
+                                        impact.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-sage-500 font-bold text-xs">&#10003;</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Deep Research & Problem
+                                        Solving</span>
+                                    <span class="text-sm text-stone-500">Ability to break complex problems into stepwise
+                                        solutions.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-sage-500 font-bold text-xs">&#10003;</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Rapid Engagement</span>
+                                    <span class="text-sm text-stone-500">Strong curiosity leads to quick initial
+                                        learning.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-sage-500 font-bold text-xs">&#10003;</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Values Alignment</span>
+                                    <span class="text-sm text-stone-500">Thrives on clarity, peace, and deep-tech
+                                        complexity.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Risks -->
+                    <div class="p-6 bg-stone-50/50">
+                        <h3 class="flex items-center text-rust-500 font-bold mb-4">
+                            <span class="text-xl mr-2">&#9888;</span> Risks (Red Flags)
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-rust-500 font-bold text-xs">!</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Rumination & Overthinking</span>
+                                    <span class="text-sm text-stone-500">Paralysis triggered by criticism or
+                                        setbacks.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-rust-500 font-bold text-xs">!</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Inconsistent Follow-through</span>
+                                    <span class="text-sm text-stone-500">High excitement fades; struggles to finish
+                                        without structure.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-rust-500 font-bold text-xs">!</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Avoidance Behavior</span>
+                                    <span class="text-sm text-stone-500">Goes silent when stuck; people-pleasing leads
+                                        to resentment.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mt-1 mr-3 text-rust-500 font-bold text-xs">!</span>
+                                <div>
+                                    <span class="block text-stone-800 font-medium">Fragile Self-Worth</span>
+                                    <span class="text-sm text-stone-500">Identity too tightly coupled with immediate
+                                        outcomes.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: 12-Week Action Plan -->
+        <section id="roadmap" class="scroll-mt-20">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-stone-900">12-Week Execution Protocol</h2>
+                    <p class="text-stone-500">Detailed breakdown of the immediate action plan to convert ambition into
+                        performance.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200">
+                <!-- Tabs -->
+                <div class="flex overflow-x-auto border-b border-stone-200 no-scrollbar">
+                    <button onclick="switchWeek('phase1')" id="tab-phase1"
+                        class="flex-1 py-4 px-6 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors whitespace-nowrap tab-active">
+                        Weeks 1-2: Setup & Definition
+                    </button>
+                    <button onclick="switchWeek('phase2')" id="tab-phase2"
+                        class="flex-1 py-4 px-6 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors whitespace-nowrap">
+                        Weeks 3-6: Execution & Rhythm
+                    </button>
+                    <button onclick="switchWeek('phase3')" id="tab-phase3"
+                        class="flex-1 py-4 px-6 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors whitespace-nowrap">
+                        Weeks 7-10: Output & Regulation
+                    </button>
+                    <button onclick="switchWeek('phase4')" id="tab-phase4"
+                        class="flex-1 py-4 px-6 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors whitespace-nowrap">
+                        Weeks 11-12: Review & Recalibrate
+                    </button>
+                </div>
+
+                <!-- Dynamic Content Area -->
+                <div id="week-content" class="p-8 min-h-[300px]">
+                    <!-- Content injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: Metrics & KPIs -->
+        <section>
+            <div class="bg-stone-900 text-stone-100 rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-xl font-bold mb-2">Target Metrics & KPIs</h2>
+                <p class="text-stone-400 text-sm mb-8">Quantitative measures to track progress and success over the
+                    12-week period.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Metric 1 -->
+                    <div class="bg-stone-800/50 p-4 rounded-lg border border-stone-700">
+                        <div class="chart-container" style="height: 150px; max-height: 150px;">
+                            <div id="metric-microwins" style="width:100%; height:100%;"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <h4 class="font-bold text-sage-400">Micro-wins</h4>
+                            <p class="text-xs text-stone-400">Target: ≥ 5 per week</p>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2 -->
+                    <div class="bg-stone-800/50 p-4 rounded-lg border border-stone-700">
+                        <div class="chart-container" style="height: 150px; max-height: 150px;">
+                            <div id="metric-milestones" style="width:100%; height:100%;"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <h4 class="font-bold text-sage-400">Milestones</h4>
+                            <p class="text-xs text-stone-400">Target: ≥ 80% On Schedule</p>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3 -->
+                    <div class="bg-stone-800/50 p-4 rounded-lg border border-stone-700">
+                        <div class="chart-container" style="height: 150px; max-height: 150px;">
+                            <div id="metric-avoidance" style="width:100%; height:100%;"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <h4 class="font-bold text-rust-500">Avoidance Incidents</h4>
+                            <p class="text-xs text-stone-400">Target: Reduce by 50%</p>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4 -->
+                    <div class="bg-stone-800/50 p-4 rounded-lg border border-stone-700">
+                        <div class="chart-container" style="height: 150px; max-height: 150px;">
+                            <div id="metric-recovery" style="width:100%; height:100%;"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <h4 class="font-bold text-sage-400">Recovery Score</h4>
+                            <p class="text-xs text-stone-400">Target: 4/5 (Subjective)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: Operational Toolbox -->
+        <section id="toolbox" class="scroll-mt-20">
+            <h2 class="text-2xl font-bold text-stone-900 mb-6">Operational Toolbox</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Communication Scripts -->
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6">
+                    <h3 class="text-lg font-bold text-stone-800 mb-4 border-b border-stone-100 pb-2">Communication
+                        Scripts</h3>
+                    <div class="space-y-4">
+                        <div class="bg-stone-50 p-4 rounded-lg">
+                            <p class="text-xs uppercase font-bold text-stone-400 mb-1">Requesting Space</p>
+                            <p class="text-stone-800 italic font-medium">"I need some quiet time to reflect on this.
+                                I’ll respond fully in [X hours]."</p>
+                        </div>
+                        <div class="bg-stone-50 p-4 rounded-lg">
+                            <p class="text-xs uppercase font-bold text-stone-400 mb-1">Receiving Criticism</p>
+                            <p class="text-stone-800 italic font-medium">"Thanks — that’s helpful. I’d like a bit of
+                                time to process; can I reply with a plan after I reflect?"</p>
+                        </div>
+                        <div class="bg-stone-50 p-4 rounded-lg">
+                            <p class="text-xs uppercase font-bold text-stone-400 mb-1">Saying No</p>
+                            <p class="text-stone-800 italic font-medium">"I can’t take this on right now. Could we
+                                either postpone or find someone else for it?"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Routine & Interventions -->
+                <div class="space-y-6">
+                    <!-- Daily Routine -->
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6">
+                        <h3 class="text-lg font-bold text-stone-800 mb-4 border-b border-stone-100 pb-2">Daily Protocol
+                        </h3>
+                        <ul class="space-y-3 text-sm text-stone-700">
+                            <li class="flex items-center"><span class="w-16 font-bold text-stone-400">Morning</span> 10m
+                                Planning + Pick 1 Micro-win</li>
+                            <li class="flex items-center"><span class="w-16 font-bold text-stone-400">Block 1</span>
+                                90–120m Deep Work (Pomodoro)</li>
+                            <li class="flex items-center"><span class="w-16 font-bold text-stone-400">Midday</span> 20m
+                                Break (Walk/Quiet)</li>
+                            <li class="flex items-center"><span class="w-16 font-bold text-stone-400">Block 2</span>
+                                60–90m Deep Work</li>
+                            <li class="flex items-center"><span class="w-16 font-bold text-stone-400">Evening</span> 10m
+                                Reflection (3 Wins + 1 Fix)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Short Term Interventions -->
+                    <div class="bg-sage-100/50 rounded-xl border border-sage-200 p-6">
+                        <h3 class="text-lg font-bold text-sage-800 mb-2">Immediate Interventions</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-sage-900">
+                            <li><span class="font-bold">5-Minute Rule:</span> Commit to just 5 mins to break inertia.
+                            </li>
+                            <li><span class="font-bold">Emotion Pause:</span> Breathe → Write 3 options → Pick smallest.
+                            </li>
+                            <li><span class="font-bold">Time-Box Research:</span> Max 2x 90min blocks per idea.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-stone-400 text-sm py-12 border-t border-stone-200 mt-12">
+            <p>Entity R-01 Profile Dashboard &copy; 2025</p>
+            <p class="mt-2">Confidential — For Internal Use Only</p>
+        </footer>
+
+    </main>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA STORE ---
+        const reportData = {
+            attributes: [
+                { id: 'cognitive', title: 'Cognitive Style', text: 'Analytical, research-oriented, breaks problems into steps. Prefers structure over impulse.', color: 'border-l-sage-500' },
+                { id: 'motivation', title: 'Motivation', text: 'Driven by curiosity, competence, healthy competition, and FOMO.', color: 'border-l-sage-500' },
+                { id: 'social', title: 'Social Style', text: 'Selectively extroverted. Energized by alignment, drained by dissonance. First impression: Quiet.', color: 'border-l-stone-400' },
+                { id: 'coping', title: 'Emotional Coping', text: 'Withdraws when hurt. Internalizes anger. Requires solitude to recover.', color: 'border-l-rust-500' }
+            ],
+            phases: {
+                phase1: {
+                    title: "Weeks 1–2: Setup & Definition",
+                    tasks: [
+                        "Set up Progress Board (Notion/Trello/Paper).",
+                        "Define one small project (3-month scope).",
+                        "Break project into 12 weekly milestones.",
+                        "Start daily micro-wins and evening reflection."
+                    ],
+                    focus: "Breaking inertia and establishing the container for work."
+                },
+                phase2: {
+                    title: "Weeks 3–6: Execution & Rhythm",
+                    tasks: [
+                        "Execute weekly milestones.",
+                        "Time-box research sessions (2 × 90min per big task).",
+                        "Establish weekly accountability check-in (30 mins).",
+                        "Implement feedback reframe logic."
+                    ],
+                    focus: "Building momentum and managing research rabbit-holes."
+                },
+                phase3: {
+                    title: "Weeks 7–10: Output & Regulation",
+                    tasks: [
+                        "Publish a 1-page progress note or short demo.",
+                        "Track emotional responses using Pause Routine.",
+                        "Reduce phone/social media during deep blocks (Blockers)."
+                    ],
+                    focus: "Visible output and emotional regulation under pressure."
+                },
+                phase4: {
+                    title: "Weeks 11–12: Review & Recalibrate",
+                    tasks: [
+                        "Review progress: Tasks/week & Avoidance frequency.",
+                        "Recalibrate next 12-week goal based on data.",
+                        "Celebrate wins explicitly."
+                    ],
+                    focus: "Data-driven reflection and preparing for the next cycle."
+                }
+            }
+        };
+
+        // --- CHART INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initRadarChart();
+            initMetricCharts();
+            renderAttributes();
+            switchWeek('phase1'); // Initial load
+
+            // Mobile Menu Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+        });
+
+        // 1. Radar Chart (Psychological Profile)
+        function initRadarChart() {
+            const ctx = document.getElementById('psychRadarChart').getContext('2d');
+
+            // Data points inferred from report text
+            // Analytical: Very High
+            // Ambition: High
+            // Resilience (vs sensitivity): Moderate/Low (Sensitive)
+            // Social Extroversion: Low/Moderate (Selective)
+            // Follow-through: Moderate/Low (Inconsistent)
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Analytical Depth', 'Ambition', 'Emotional Resilience', 'Social Energy', 'Follow-through'],
+                    datasets: [{
+                        label: 'Natural Baseline',
+                        data: [90, 85, 40, 50, 45],
+                        backgroundColor: 'rgba(132, 169, 140, 0.2)', // Sage
+                        borderColor: 'rgba(132, 169, 140, 1)',
+                        pointBackgroundColor: 'rgba(132, 169, 140, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(132, 169, 140, 1)'
+                    }, {
+                        label: 'Under Stress',
+                        data: [95, 70, 20, 20, 15], // Withdraws, overthinks (high analysis), low follow-through
+                        backgroundColor: 'rgba(214, 104, 83, 0.2)', // Rust
+                        borderColor: 'rgba(214, 104, 83, 1)',
+                        pointBackgroundColor: 'rgba(214, 104, 83, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(214, 104, 83, 1)',
+                        hidden: true // Start hidden to let user toggle
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e7e5e4' },
+                            grid: { color: '#e7e5e4' },
+                            pointLabels: {
+                                font: { size: 12, family: 'Inter' },
+                                color: '#57534e'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#57534e',
+                                font: { family: 'Inter' }
+                            },
+                            onClick: function (e, legendItem, legend) {
+                                const index = legendItem.datasetIndex;
+                                const ci = legend.chart;
+                                if (ci.isDatasetVisible(index)) {
+                                    ci.hide(index);
+                                    legendItem.hidden = true;
+                                } else {
+                                    ci.show(index);
+                                    legendItem.hidden = false;
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Plotly Gauge Charts (Metrics)
+        function initMetricCharts() {
+            const commonLayout = {
+                margin: { t: 0, b: 0, l: 15, r: 15 },
+                paper_bgcolor: "rgba(0,0,0,0)",
+                font: { family: "Inter" }
+            };
+
+            // Micro-wins
+            Plotly.newPlot('metric-microwins', [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: 5, // Target
+                title: { text: "", font: { size: 12 } },
+                gauge: {
+                    axis: { range: [0, 10], tickwidth: 1, tickcolor: "#a8a29e" },
+                    bar: { color: "#84a98c" },
+                    bgcolor: "rgba(0,0,0,0)",
+                    borderwidth: 0,
+                    bordercolor: "transparent",
+                    steps: [
+                        { range: [0, 3], color: "#44403c" },
+                        { range: [3, 10], color: "#292524" }
+                    ],
+                }
+            }], commonLayout, { staticPlot: true, responsive: true });
+
+            // Milestones
+            Plotly.newPlot('metric-milestones', [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: 80,
+                number: { suffix: "%" },
+                gauge: {
+                    axis: { range: [0, 100] },
+                    bar: { color: "#84a98c" },
+                    steps: [
+                        { range: [0, 50], color: "#44403c" },
+                        { range: [50, 100], color: "#292524" }
+                    ],
+                }
+            }], commonLayout, { staticPlot: true, responsive: true });
+
+            // Avoidance (Inverse is good)
+            Plotly.newPlot('metric-avoidance', [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: 50,
+                number: { suffix: "%" }, // Reduction target
+                gauge: {
+                    axis: { range: [0, 100] },
+                    bar: { color: "#d66853" }, // Rust for avoidance
+                    steps: [
+                        { range: [0, 50], color: "#292524" }, // Target area
+                        { range: [50, 100], color: "#44403c" }
+                    ],
+                    threshold: {
+                        line: { color: "white", width: 4 },
+                        thickness: 0.75,
+                        value: 50
+                    }
+                }
+            }], commonLayout, { staticPlot: true, responsive: true });
+
+            // Recovery
+            Plotly.newPlot('metric-recovery', [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: 4,
+                gauge: {
+                    axis: { range: [0, 5] },
+                    bar: { color: "#84a98c" },
+                    steps: [
+                        { range: [0, 2.5], color: "#44403c" },
+                        { range: [2.5, 5], color: "#292524" }
+                    ],
+                }
+            }], commonLayout, { staticPlot: true, responsive: true });
+        }
+
+        // 3. Render Attributes List
+        function renderAttributes() {
+            const container = document.getElementById('behavior-accordion');
+            container.innerHTML = reportData.attributes.map(attr => `
+                <div class="group border-l-4 ${attr.color} bg-stone-50 p-4 rounded-r-lg hover:bg-stone-100 transition-all cursor-default">
+                    <h3 class="font-bold text-stone-800 text-sm uppercase tracking-wide mb-1">${attr.title}</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">${attr.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // 4. Tab Switching Logic for Roadmap
+        function switchWeek(phaseId) {
+            // Update Tab Styles
+            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.remove('text-stone-800');
+                tab.classList.add('text-stone-500');
+            });
+            const activeTab = document.getElementById(`tab-${phaseId}`);
+            activeTab.classList.add('tab-active');
+            activeTab.classList.add('text-stone-800');
+            activeTab.classList.remove('text-stone-500');
+
+            // Render Content
+            const data = reportData.phases[phaseId];
+            const contentDiv = document.getElementById('week-content');
+
+            // Simple opacity transition
+            contentDiv.style.opacity = 0;
+
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2">
+                            <h3 class="text-2xl font-bold text-stone-800 mb-4">${data.title}</h3>
+                            <ul class="space-y-4">
+                                ${data.tasks.map(task => `
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 h-6 w-6 rounded-full border-2 border-sage-500 flex items-center justify-center mr-3 mt-0.5">
+                                            <span class="block w-2 h-2 bg-sage-500 rounded-full"></span>
+                                        </div>
+                                        <span class="text-lg text-stone-700">${task}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="bg-sage-100/30 rounded-lg p-6 border border-sage-100">
+                            <h4 class="text-sm uppercase tracking-wider font-bold text-sage-700 mb-3">Primary Focus</h4>
+                            <p class="text-stone-700 italic font-medium">"${data.focus}"</p>
+                            
+                            <div class="mt-6 pt-6 border-t border-sage-200">
+                                <h4 class="text-xs uppercase tracking-wider font-bold text-stone-400 mb-2">Key Resource</h4>
+                                <button class="text-sm text-sage-700 font-bold hover:underline" onclick="document.getElementById('toolbox').scrollIntoView({behavior: 'smooth'})">
+                                    View Toolbox Scripts &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                contentDiv.style.opacity = 1;
+            }, 200);
+        }
+    </script>
+</body>
+
+</html>
